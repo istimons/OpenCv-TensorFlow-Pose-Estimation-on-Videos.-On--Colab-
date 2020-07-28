@@ -1,0 +1,150 @@
+# ==================Project Description======================================
+"""
+OpenCv + TensorFlow Pose Estimation on Videos. [Colab]
+"""
+
+# ==================Project Description End==================================
+
+# Main File
+
+# [INFO] IMPORTANT (mount Google Drive [if not mounted] to get access to video files)
+# If athorization is required, copy the the code from auth link and
+
+# from google.colab import drive
+# drive.mount("drive", force_remount=False)
+
+
+# # ================================== NOTE ===================================
+
+"""
+This model uses tensorflow version lower than the current version(2)
+The preffered version is, tensoflow version 1.14.0
+
+All files are saved to Google Drive at
+(I/O files at /content/drive/My Drive/tmp/video and /content/drive/My Drive/tmp/output) 
+"""
+
+# ================================== NOTE END================================
+
+# Install tensorflow version 1.14.0
+
+!pip3 install tensorflow==1.14.0
+
+# !git clone https://github.com/ildoonet/tf-pose-estimation.git > /dev/null
+
+# %cd /content/tf-pose-estimation
+
+%cd /content/drive/My Drive/tf-pose-estimation
+
+!pip3 -q install -r requirements.txt
+
+!python3 setup.py install
+
+!wget https://www.dropbox.com/s/nf7ffqjv37dvin0/graph_opt.pb?dl=0 -O ./models/graph/cmu/graph_opt.pb 
+
+!sudo apt install swig
+
+%cd tf_pose/pafprocess
+
+!swig -python -c++ pafprocess.i && python3 setup.py build_ext --inplace
+
+# %cd /content/tf-pose-estimation
+
+%cd /content/drive/My Drive/tf-pose-estimation
+
+
+# THIS ARE THE DIRECTORIES FOR VIDEO I/O FILES POSE-EST MANIPULATION
+
+PATH_VIDEOS = '/content/drive/My Drive/tmp/videos'
+
+PATH_OUTPUT = '/content/drive/My Drive/tmp/output'
+
+
+# DETECT POSE-EST IN ALL VIDEO FILES 
+
+import os
+import sys
+import time
+
+
+from tf_pose.estimator import TfPoseEstimator
+import cv2
+from tf_pose.networks import *
+from tf_pose import common
+
+w, h = model_wh("432x368")
+
+e = TfPoseEstimator(get_graph_path("mobilenet_thin"), 
+                    target_size=(w, h), tf_config=tf.ConfigProto(log_device_placement=True))
+
+def pose_estimate_video(video_name, path_video=PATH_VIDEOS, path_out=PATH_OUTPUT):
+  """
+
+  This function provides I/O for video frames
+  Read video frames are passed to TfPoseEstimator to detect different human poses
+
+  """
+
+  #e = TfPoseEstimator(get_graph_path("cmu"), target_size=(w, h))
+  input_file = os.path.join(path_video, video_name )
+  cap = cv2.VideoCapture(input_file )
+
+  width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)   # float
+  height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT) # float
+  fps = cap.get(cv2.CAP_PROP_FPS) # float
+	
+  property_id = int(cv2.CAP_PROP_FRAME_COUNT) 
+  total_frame = int(cv2.VideoCapture.get(cap, property_id))
+  print("Total frames: ", total_frame)
+
+  fourcc = cv2.VideoWriter_fourcc(*'MJPG')  
+  output_file = os.path.join(path_out, video_name )
+  out = cv2.VideoWriter(output_file, fourcc, fps, (int(width), int(height)))
+    
+  fps_time = 0
+  count = 1
+  if cap.isOpened() is False:
+	   print("Error opening video file")
+  while cap.isOpened():
+    ret_val, image = cap.read()
+    if ret_val == False:
+      break
+          
+    humans = e.inference(image, resize_to_default=(w > 0 and h > 0), upsample_size=4.0)
+    #logger.debug('postprocess+')
+    image = TfPoseEstimator.draw_humans(image, humans, imgcopy=False)
+
+    #logger.debug('show+')    
+    cv2.putText(image,
+					"FPS: %f" % (1.0 / (time.time() - fps_time)),
+					(10, 10),  cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+					(0, 255, 0), 2)
+   
+    fps_time = time.time()
+	  
+    #cv2.imshow('tf-pose-estimation result', image)
+    out.write(image)
+    print("frame %d -> %d" % (count, total_frame) , end="\r", flush=True); count+=1
+    
+    if count==1200:
+      # break
+      pass
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+      break
+	
+	# When everything done, release the capture
+  cap.release()
+  #cv2.destroyAllWindows()
+
+
+# Create new videos with pose estimation, save videos to (/content/drive/My Drive/tmp/output)
+# By accessing video files in google drive directory (/content/drive/My Drive/tmp/videos) and
+# Passing each video file to pose_estimate_video() method
+
+import os.path
+for file in os.listdir(PATH_VIDEOS):
+  if os.path.isfile(os.path.join(PATH_VIDEOS, file )):
+    print("Reading file:", file)
+    pose_estimate_video(file, path_video=PATH_VIDEOS, path_out=PATH_OUTPUT)
+    print('Success !')
