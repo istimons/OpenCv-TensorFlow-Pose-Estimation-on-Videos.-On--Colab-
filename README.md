@@ -42,6 +42,6 @@ Install the following packages;
 
 %cd /content/drive/My Drive/tf-pose-estimation
 
-**Note:**
+**Note:** <br>
 This code block is run in the main file, run once and comment the code blocks
 
