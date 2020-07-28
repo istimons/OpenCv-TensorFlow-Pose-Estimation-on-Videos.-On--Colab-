@@ -12,6 +12,10 @@ The following packages were installed on colab, you can install then on your
 local machine by removing (!) mark. 
 Also, remember to change the drive directory path on colab and, or local methods.
 
+Example:
+`%cd /content/drive/My Drive/tf-pose-estimation`
+
+
 Install the following packages;
 
 # Install tensorflow version 1.14.0
@@ -33,8 +37,6 @@ Install the following packages;
 %cd tf_pose/pafprocess
 
 !swig -python -c++ pafprocess.i && python3 setup.py build_ext --inplace
-
-# %cd /content/tf-pose-estimation
 
 %cd /content/drive/My Drive/tf-pose-estimation
 
