@@ -1,7 +1,6 @@
 # OpenCv-TensorFlow-Pose-Estimation-on-Videos.-Colab-
 OpenCv + TensorFlow Pose Estimation on Videos
 
-### ==================Project Description======================================
 """
 OpenCv + TensorFlow Pose Estimation on Videos. [Colab]
 """
@@ -42,6 +41,3 @@ Install the following packages;
 !swig -python -c++ pafprocess.i && python3 setup.py build_ext --inplace
 
 %cd /content/drive/My Drive/tf-pose-estimation
-
-
-### ==================Project Description End==================================
