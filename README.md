@@ -15,6 +15,9 @@ Also, remember to change the drive directory path on colab and, or local methods
 Example: <br>
 `%cd /content/drive/My Drive/tf-pose-estimation`
 
+In the above code block, my Google Drive is mounted as (`drive`).
+After a successful mount, i extracted `tf-pose-estimation` to the drive relative path as 
+shown in the code block.
 
 Install the following packages;
 
