@@ -12,7 +12,7 @@ The following packages were installed on colab, you can install then on your
 local machine by removing (!) mark. 
 Also, remember to change the drive directory path on colab and, or local methods.
 
-Example:
+Example: <br>
 `%cd /content/drive/My Drive/tf-pose-estimation`
 
 
