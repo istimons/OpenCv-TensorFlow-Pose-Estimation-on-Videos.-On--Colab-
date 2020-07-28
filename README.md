@@ -5,7 +5,7 @@ OpenCv + TensorFlow Pose Estimation on Videos
 OpenCv + TensorFlow Pose Estimation on Videos. [Colab]
 """
 
-NOTE:
+**NOTE:**
 
 The following packages were installed on colab, you can install then on your 
 local machine by removing (!) mark. 
@@ -20,7 +20,7 @@ shown in the code block.
 
 Install the following packages;
 
-# Install tensorflow version 1.14.0
+#### Install tensorflow version 1.14.0
 
 !pip3 install tensorflow==1.14.0
 
@@ -42,6 +42,6 @@ Install the following packages;
 
 %cd /content/drive/My Drive/tf-pose-estimation
 
-*Note:*
+**Note:**
 This code block is run in the main file, run once and comment the code blocks
 
